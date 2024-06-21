@@ -1,0 +1,1 @@
+pub static RUST_LOGO_IMG: &[u8] = include_bytes!("../assets/rust.png");

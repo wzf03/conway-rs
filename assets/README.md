@@ -1,0 +1,1 @@
+- `assets/ark-pixel-16px-proportional-latin.ttf` from [ark-pixel-font](https://github.com/TakWolf/ark-pixel-font)

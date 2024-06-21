@@ -8,10 +8,10 @@ edition = "2021"
 [dependencies.sdl2]
 version = "0.37"
 default-features = false
-features = ["static-link","use-vcpkg"]
+features = ["ttf", "image", "unsafe_textures", "static-link", "use-vcpkg"]
 
 [package.metadata.vcpkg]
-dependencies = ["sdl2"]
+dependencies = ["sdl2", "sdl2-ttf", "sdl2-image"]
 git = "https://github.com/microsoft/vcpkg"
 rev = "2024.06.15"
 

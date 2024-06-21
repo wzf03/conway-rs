@@ -1,24 +1,24 @@
+use sdl2::{image::Sdl2ImageContext, ttf::Sdl2TtfContext, Sdl, VideoSubsystem};
+
 pub struct SdlContext {
-    pub sdl_context: sdl2::Sdl,
-    pub video_subsystem: sdl2::VideoSubsystem,
-    pub canvas: sdl2::render::Canvas<sdl2::video::Window>,
+    pub sdl_context: Sdl,
+    pub ttf_context: Sdl2TtfContext,
+    pub image_context: Sdl2ImageContext,
+    pub video_subsystem: VideoSubsystem,
 }
 
-impl SdlContext {
-    pub fn new(window_title: String, window_width: u32, window_height: u32) -> SdlContext {
-        let sdl_context = sdl2::init().unwrap();
-        let video_subsystem = sdl_context.video().unwrap();
-        let window = video_subsystem
-            .window(&window_title, window_width, window_height)
-            .position_centered()
-            .opengl()
-            .build()
-            .unwrap();
-        let canvas = window.into_canvas().build().unwrap();
+impl<'a> SdlContext {
+    pub fn new(
+        sdl_context: Sdl,
+        ttf_context: Sdl2TtfContext,
+        image_context: Sdl2ImageContext,
+        video_subsystem: VideoSubsystem,
+    ) -> SdlContext {
         SdlContext {
             sdl_context,
+            ttf_context,
+            image_context,
             video_subsystem,
-            canvas,
         }
     }
 }

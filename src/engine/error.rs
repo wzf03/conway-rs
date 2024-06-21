@@ -3,6 +3,7 @@ use std::{error, fmt};
 #[derive(Debug, Clone)]
 pub enum EngineError {
     StateError,
+    SdlError(String),
 }
 
 impl fmt::Display for EngineError {
