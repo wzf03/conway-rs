@@ -2,6 +2,7 @@ extern crate sdl2;
 
 pub mod app;
 pub mod error;
+pub mod frame_limiter;
 pub mod resource_manager;
 pub mod sdlcontext;
 pub mod view;
@@ -34,7 +35,7 @@ impl Engine {
 
             let mut font_manager = FontManager::new(&self.context.ttf_context);
 
-            let mut app = T::create();
+            let mut app = T::create(self.canvas.viewport());
             app.run(
                 &mut self.context.sdl_context,
                 &mut self.canvas,

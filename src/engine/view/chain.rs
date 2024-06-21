@@ -1,10 +1,12 @@
+use std::{cell::RefCell, rc::Rc};
+
 use sdl2::{rect::Rect, render::TextureCreator, video::WindowContext};
 
 use crate::engine::resource_manager::FontManager;
 
 use super::View;
 pub struct ViewChain {
-    views: Vec<Box<dyn View>>,
+    views: Vec<Rc<RefCell<dyn View>>>,
     bound: Rect,
 }
 
@@ -16,8 +18,8 @@ impl ViewChain {
         }
     }
 
-    pub fn add_view(&mut self, view: Box<dyn View>) {
-        self.bound.union(view.get_bound());
+    pub fn add_view(&mut self, view: Rc<RefCell<dyn View>>) {
+        self.bound.union(view.borrow().get_bound());
         self.views.push(view);
     }
 }
@@ -30,7 +32,7 @@ impl View for ViewChain {
         font_manager: &mut FontManager,
     ) -> Result<(), Box<dyn std::error::Error>> {
         for view in &mut self.views {
-            view.render(canvas, texture_creator, font_manager)?;
+            view.borrow_mut().render(canvas, texture_creator, font_manager)?;
         }
         Ok(())
     }
@@ -39,31 +41,31 @@ impl View for ViewChain {
         self.bound
     }
 
-    fn on_key_down(&self, _key: sdl2::keyboard::Keycode) {
-        for view in &self.views {
-            view.on_key_down(_key);
+    fn on_key_down(&mut self, _key: sdl2::keyboard::Keycode) {
+        for view in &mut self.views {
+            view.borrow_mut().on_key_down(_key);
         }
     }
 
-    fn on_mouse_button_down(&self, button: sdl2::mouse::MouseButton, x: i32, y: i32) {
-        for view in &self.views {
-            view.on_mouse_button_down(button, x, y);
+    fn on_mouse_button_down(&mut self, button: sdl2::mouse::MouseButton, x: i32, y: i32) {
+        for view in &mut self.views {
+            view.borrow_mut().on_mouse_button_down(button, x, y);
         }
     }
 
-    fn on_mouse_motion(&self, _x: i32, _y: i32) {
-        for view in &self.views {
-            view.on_mouse_motion(_x, _y);
+    fn on_mouse_motion(&mut self, _x: i32, _y: i32) {
+        for view in &mut self.views {
+            view.borrow_mut().on_mouse_motion(_x, _y);
         }
     }
 }
 
-impl From<Vec<Box<dyn View>>> for ViewChain {
-    fn from(views: Vec<Box<dyn View>>) -> ViewChain {
-        let bound = Rect::new(0, 0, 0, 0);
-        for view in &views {
-            bound.union(view.get_bound());
-        }
-        ViewChain { views, bound }
-    }
-}
+// impl From<Vec<Box<dyn View>>> for ViewChain {
+//     fn from(views: Vec<Box<dyn View>>) -> ViewChain {
+//         let bound = Rect::new(0, 0, 0, 0);
+//         for view in &views {
+//             bound.union(view.get_bound());
+//         }
+//         ViewChain { views, bound }
+//     }
+// }

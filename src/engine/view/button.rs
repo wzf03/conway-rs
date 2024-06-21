@@ -27,7 +27,7 @@ impl View for ButtonView {
         self.bound
     }
 
-    fn on_mouse_button_down(&self, button: sdl2::mouse::MouseButton, x: i32, y: i32) {
+    fn on_mouse_button_down(&mut self, button: sdl2::mouse::MouseButton, x: i32, y: i32) {
         if let sdl2::mouse::MouseButton::Left = button {
             if self.bound.contains_point((x, y)) {
                 (self.callback)();

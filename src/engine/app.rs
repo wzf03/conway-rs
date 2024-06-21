@@ -1,4 +1,5 @@
 use sdl2::{
+    rect::Rect,
     render::{Canvas, TextureCreator},
     video::{Window, WindowContext},
     Sdl,
@@ -7,7 +8,7 @@ use sdl2::{
 use super::resource_manager::FontManager;
 
 pub trait App {
-    fn create() -> Self;
+    fn create(viewport: Rect) -> Self;
     fn run(
         &mut self,
         sdl_context: &mut Sdl,
