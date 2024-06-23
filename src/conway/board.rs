@@ -243,6 +243,9 @@ impl View for BoardView {
             }
         })?;
         canvas.copy(&texture, None, self.view_bound)?;
+        unsafe {
+            texture.destroy();
+        }
         Ok(())
     }
 
