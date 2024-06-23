@@ -3,16 +3,16 @@ pub struct ConwayGameState {
     height: usize,
     cells: Vec<bool>,
     prev_cells: Vec<bool>,
-    symmetry: bool,
+    periodic: bool,
 }
 
 #[allow(dead_code)]
 impl ConwayGameState {
-    pub fn new(width: usize, height: usize, symmetry: bool) -> ConwayGameState {
+    pub fn new(width: usize, height: usize, periodic: bool) -> ConwayGameState {
         ConwayGameState {
             width,
             height,
-            symmetry,
+            periodic,
             cells: vec![false; width * height],
             prev_cells: vec![false; width * height],
         }
@@ -42,6 +42,14 @@ impl ConwayGameState {
 
     pub fn set_cell(&mut self, x: usize, y: usize, value: bool) {
         self.cells[y * self.width + x] = value;
+    }
+
+    pub fn get_is_periodic(&self) -> bool {
+        self.periodic
+    }
+
+    pub fn set_is_periodic(&mut self, periodic: bool) {
+        self.periodic = periodic;
     }
 
     pub fn step(&mut self) {
@@ -106,7 +114,7 @@ impl ConwayGameState {
                     continue;
                 }
 
-                if self.symmetry {
+                if self.periodic {
                     let nx = (x as isize + dx + self.width as isize) as usize % self.width;
                     let ny = (y as isize + dy + self.height as isize) as usize % self.height;
                     if self.cells[ny * self.width + nx] {

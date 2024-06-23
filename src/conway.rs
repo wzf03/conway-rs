@@ -1,20 +1,19 @@
+use crate::engine::{
+    app::App,
+    frame_limiter::{FrameLimiter, FrameStepType},
+    view::{ButtonView, ImageView, TextView, View, ViewChain},
+};
+use crate::{fonts, images};
+use args::ConwayArgs;
+use board::BoardView;
+use clap::Parser;
+use sdl2::{event::Event, keyboard::Keycode, pixels::Color, rect::Rect};
 use std::{
     cell::{Cell, RefCell},
     rc::Rc,
 };
 
-use board::BoardView;
-use sdl2::{event::Event, keyboard::Keycode, pixels::Color, rect::Rect};
-
-use crate::{
-    engine::{
-        app::App,
-        frame_limiter::{FrameLimiter, FrameStepType},
-        view::{ButtonView, ImageView, TextView, View, ViewChain},
-    },
-    fonts, images,
-};
-
+mod args;
 mod board;
 mod game_state;
 
@@ -29,6 +28,8 @@ pub struct ConwayApp {
 
 impl App for ConwayApp {
     fn create(_viewport: Rect) -> Self {
+        let args = ConwayArgs::parse();
+
         let mut app = ConwayApp {
             components: ViewChain::new(),
             fps_limiter: Rc::new(RefCell::new(FrameLimiter::new(60, 1))),
@@ -47,7 +48,7 @@ impl App for ConwayApp {
         let exit_button_bound = Rect::new(20, 400, 100, 40);
         let logo_bound = Rect::new(20, 460, 120, 120);
 
-        let board_view = BoardView::new(32, 32, board_bound).wrap();
+        let board_view = BoardView::new(args.width, args.height, args.periodic, board_bound).wrap();
         app.components.add_view(board_view.clone());
 
         let speed_text = TextView::new(

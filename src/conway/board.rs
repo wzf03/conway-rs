@@ -30,7 +30,12 @@ pub struct BoardView {
 }
 
 impl BoardView {
-    pub fn new(board_width: usize, board_height: usize, view_bound: Rect) -> BoardView {
+    pub fn new(
+        board_width: usize,
+        board_height: usize,
+        periodic: bool,
+        view_bound: Rect,
+    ) -> BoardView {
         // Calculate the cell width and height
         let cell_length = min(
             view_bound.width() as usize / board_width,
@@ -48,7 +53,7 @@ impl BoardView {
             view_bound,
             render_bound,
             cell_length,
-            game_state: ConwayGameState::new(board_width, board_height, true),
+            game_state: ConwayGameState::new(board_width, board_height, periodic),
             hovering_cell: None,
         }
     }
@@ -72,6 +77,10 @@ impl BoardView {
         );
     }
 
+    pub fn set_periodic(&mut self, periodic: bool) {
+        self.game_state.set_is_periodic(periodic);
+    }
+
     pub fn export_to_file(&self) -> Result<(), Box<dyn std::error::Error>> {
         let file = rfd::FileDialog::new()
             .set_directory("./")
@@ -83,8 +92,9 @@ impl BoardView {
 
         let width = self.game_state.get_width();
         let height = self.game_state.get_height();
+        let periodic = self.game_state.get_is_periodic();
 
-        file.write_all(format!("{} {}\n", width, height).as_bytes())?;
+        file.write_all(format!("{} {} {}\n", width, height, periodic).as_bytes())?;
 
         file.write_all(
             self.game_state
@@ -109,12 +119,13 @@ impl BoardView {
 
         let mut lines = std::io::BufReader::new(file).lines();
 
-        let (width, height): (usize, usize) = {
+        let (width, height, periodic): (usize, usize, bool) = {
             let line = lines.next().ok_or("Invalid file format")??;
             let mut parts = line.split_whitespace();
             let width = parts.next().ok_or("Invalid file format")?.parse()?;
             let height = parts.next().ok_or("Invalid file format")?.parse()?;
-            (width, height)
+            let periodic = parts.next().ok_or("Invalid file format")?.parse()?;
+            (width, height, periodic)
         };
 
         // Check if the width and height are within the valid range
@@ -143,6 +154,7 @@ impl BoardView {
         }
 
         self.resize(width, height);
+        self.set_periodic(periodic);
         self.game_state.set_cells(cells);
 
         Ok(())
