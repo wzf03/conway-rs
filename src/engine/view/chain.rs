@@ -32,13 +32,20 @@ impl View for ViewChain {
         font_manager: &mut FontManager,
     ) -> Result<(), Box<dyn std::error::Error>> {
         for view in &mut self.views {
-            view.borrow_mut().render(canvas, texture_creator, font_manager)?;
+            view.borrow_mut()
+                .render(canvas, texture_creator, font_manager)?;
         }
         Ok(())
     }
 
     fn get_bound(&self) -> Rect {
         self.bound
+    }
+
+    fn on_tick(&mut self) {
+        for view in &mut self.views {
+            view.borrow_mut().on_tick();
+        }
     }
 
     fn on_key_down(&mut self, _key: sdl2::keyboard::Keycode) {
@@ -59,13 +66,3 @@ impl View for ViewChain {
         }
     }
 }
-
-// impl From<Vec<Box<dyn View>>> for ViewChain {
-//     fn from(views: Vec<Box<dyn View>>) -> ViewChain {
-//         let bound = Rect::new(0, 0, 0, 0);
-//         for view in &views {
-//             bound.union(view.get_bound());
-//         }
-//         ViewChain { views, bound }
-//     }
-// }

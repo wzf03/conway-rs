@@ -54,7 +54,6 @@ where
 impl<'l> ResourceLoader<'l, Font<'l, 'static>> for Sdl2TtfContext {
     type Args = FontDetails;
     fn load(&'l self, details: &FontDetails) -> Result<Font<'l, 'static>, String> {
-        println!("LOADED A FONT");
         self.load_font_from_rwops(RWops::from_bytes(&details.content)?, details.size)
     }
 }

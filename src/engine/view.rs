@@ -2,6 +2,9 @@ pub mod button;
 pub mod chain;
 pub mod image;
 pub mod text;
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use sdl2::render::TextureCreator;
 use sdl2::video::WindowContext;
 use sdl2::{event::Event, mouse::MouseButton, rect::Rect};
@@ -23,6 +26,13 @@ pub trait View {
 
     fn get_bound(&self) -> Rect;
 
+    fn wrap(self) -> Rc<RefCell<Self>>
+    where
+        Self: Sized,
+    {
+        Rc::new(RefCell::new(self))
+    }
+
     fn on_event(&mut self, event: &Event) {
         match event {
             &Event::KeyDown {
@@ -36,6 +46,8 @@ pub trait View {
         }
     }
 
+    fn on_tick(&mut self) {}
+
     fn on_key_down(&mut self, key: sdl2::keyboard::Keycode) {
         let _ = key;
     }
@@ -47,14 +59,5 @@ pub trait View {
     fn on_mouse_motion(&mut self, x: i32, y: i32) {
         let _ = x;
         let _ = y;
-    }
-}
-
-impl<T> From<T> for Box<dyn View>
-where
-    T: View + 'static,
-{
-    fn from(view: T) -> Box<dyn View> {
-        Box::new(view)
     }
 }

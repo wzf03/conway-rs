@@ -250,6 +250,10 @@ impl View for BoardView {
         self.view_bound
     }
 
+    fn on_tick(&mut self) {
+        self.step();
+    }
+
     fn on_mouse_motion(&mut self, x: i32, y: i32) {
         if self.view_bound.contains_point((x, y)) {
             self.hovering_cell = Some(self.get_cell_index(x, y));
