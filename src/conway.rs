@@ -45,7 +45,7 @@ impl App for ConwayApp {
         let load_button_bound = Rect::new(20, 300, 100, 40);
         let save_button_bound = Rect::new(20, 350, 100, 40);
         let exit_button_bound = Rect::new(20, 400, 100, 40);
-        let logo_bound = Rect::new(20, 480, 100, 100);
+        let logo_bound = Rect::new(20, 460, 120, 120);
 
         let board_view = BoardView::new(32, 32, board_bound).wrap();
         app.components.add_view(board_view.clone());
