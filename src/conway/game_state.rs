@@ -3,7 +3,6 @@ pub struct ConwayGameState {
     height: usize,
     cells: Vec<bool>,
     prev_cells: Vec<bool>,
-    generation: u64,
     symmetry: bool,
 }
 
@@ -16,7 +15,6 @@ impl ConwayGameState {
             symmetry,
             cells: vec![false; width * height],
             prev_cells: vec![false; width * height],
-            generation: 0,
         }
     }
 
@@ -32,8 +30,10 @@ impl ConwayGameState {
         &self.cells
     }
 
-    pub fn get_generation(&self) -> u64 {
-        self.generation
+    pub fn set_cells(&mut self, cells: Vec<bool>) {
+        assert!(cells.len() == self.width * self.height);
+        self.cells = cells;
+        self.prev_cells = vec![false; self.width * self.height];
     }
 
     pub fn get_cell(&self, x: usize, y: usize) -> bool {
@@ -63,6 +63,41 @@ impl ConwayGameState {
         std::mem::swap(&mut self.cells, &mut self.prev_cells);
     }
 
+    pub fn resize(&mut self, width: usize, height: usize) {
+        // Resize the cells and prev_cells vectors
+        self.cells = ConwayGameState::resize_cells(
+            self.cells.clone(),
+            (width, height),
+            (self.width, self.height),
+        );
+        self.prev_cells = ConwayGameState::resize_cells(
+            self.prev_cells.clone(),
+            (width, height),
+            (self.width, self.height),
+        );
+        self.width = width;
+        self.height = height;
+    }
+
+    pub fn clear(&mut self) {
+        self.cells.fill(false);
+        self.prev_cells.fill(false);
+    }
+
+    fn resize_cells(
+        cells: Vec<bool>,
+        new_size: (usize, usize),
+        old_size: (usize, usize),
+    ) -> Vec<bool> {
+        let mut new_cells = vec![false; new_size.0 * new_size.1];
+        for y in 0..old_size.1.min(new_size.1) {
+            for x in 0..old_size.0.min(new_size.0) {
+                new_cells[y * new_size.0 + x] = cells[y * old_size.0 + x];
+            }
+        }
+        new_cells
+    }
+
     fn count_neighors(&self, x: usize, y: usize) -> usize {
         let mut count = 0;
         for dy in -1..=1 {
@@ -89,5 +124,44 @@ impl ConwayGameState {
             }
         }
         count
+    }
+
+    pub fn get_newly_born_cells(&self) -> Vec<(usize, usize)> {
+        let mut newly_born_cells = Vec::new();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let idx = y * self.width + x;
+                if self.cells[idx] && !self.prev_cells[idx] {
+                    newly_born_cells.push((x, y));
+                }
+            }
+        }
+        newly_born_cells
+    }
+
+    pub fn get_newly_dead_cells(&self) -> Vec<(usize, usize)> {
+        let mut newly_dead_cells = Vec::new();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let idx = y * self.width + x;
+                if !self.cells[idx] && self.prev_cells[idx] {
+                    newly_dead_cells.push((x, y));
+                }
+            }
+        }
+        newly_dead_cells
+    }
+
+    pub fn get_retained_cells(&self) -> Vec<(usize, usize)> {
+        let mut retained_cells = Vec::new();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let idx = y * self.width + x;
+                if self.cells[idx] && self.prev_cells[idx] {
+                    retained_cells.push((x, y));
+                }
+            }
+        }
+        retained_cells
     }
 }
