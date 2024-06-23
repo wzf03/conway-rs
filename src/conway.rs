@@ -84,7 +84,7 @@ impl App for ConwayApp {
         let speedup_button_bound = Rect::new(20, 100, 80, 40);
         let speedup_button_text = Rc::new(RefCell::new(TextView::new(
             speedup_button_bound,
-            "Speed Up  ".to_string(),
+            "Speed Up".to_string(),
             &fonts::ARK_PIXEL_FONT,
             16,
             Color::BLACK,

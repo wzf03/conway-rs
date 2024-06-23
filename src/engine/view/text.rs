@@ -11,6 +11,7 @@ pub struct TextView {
     size: u16,
     color: Color,
     texture: Option<Texture>,
+    render_bound: Option<Rect>,
 }
 
 impl TextView {
@@ -28,6 +29,7 @@ impl TextView {
             size,
             color,
             texture: None,
+            render_bound: None,
         }
     }
 
@@ -38,6 +40,7 @@ impl TextView {
                 texture.destroy();
             }
         }
+        self.render_bound.take();
     }
 
     pub fn set_text(&mut self, text: String) {
@@ -72,9 +75,25 @@ impl View for TextView {
             let surface = font.render(&self.text).blended(self.color)?;
 
             self.texture = Some(texture_creator.create_texture_from_surface(&surface)?);
+            self.render_bound = Some(Rect::new(
+                self.bound.x(),
+                self.bound.y(),
+                surface.width().min(self.bound.width()),
+                surface.height().min(self.bound.height()),
+            ));
         }
 
-        canvas.copy(&self.texture.as_ref().unwrap(), None, self.bound)?;
+        let render_bound = self.render_bound.unwrap();
+        canvas.copy(
+            &self.texture.as_ref().unwrap(),
+            Rect::new(
+                0,
+                0,
+                render_bound.width(),
+                render_bound.height(),
+            ),
+            render_bound,
+        )?;
         Ok(())
     }
 
