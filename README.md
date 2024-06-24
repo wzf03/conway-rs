@@ -1,4 +1,17 @@
+# Conway's Game of Life in Rust!
+![screenshot](./images/screenshot.png)
+
+## Features
+
+- Supports periodic boundary conditions.
+- Supports custom board size.
+- Supports load and save board state from/to file.
+- Supports speed control.
+- Supports pause and resume.
+- And more...
+
 ## How to Run
+> Note: MSVC toolchain is required under Windows.
 ```shell
 cargo install cargo-vcpkg
 cargo vcpkg build
